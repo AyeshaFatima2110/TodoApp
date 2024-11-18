@@ -13,7 +13,7 @@ router.get('/task',async(req,res)=>{
     res.send(allTask);}
   catch(err){
     console.log(`error : ${err}`);
-    res.sendStatus({message : 'cannot fetch data'});
+    res.sendStatus(400);
   }
 
 });
@@ -33,6 +33,15 @@ router.post('/task/submit',async(req,res)=>{
     }
   
 });
+
+router.delete('/task/delete',async(req,res)=>{
+  const {body} = req;
+  const {taskname ,taskdate } = body;
+  
+  const targetTask = await task.findOne({taskname}); 
+  await task.deleteOne({_id:targetTask._id});
+  res.sendStatus(200);
+})
 
 export default router;
 
