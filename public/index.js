@@ -8,7 +8,34 @@ let dl = '';
 
 
 
-getAllTask();
+
+
+getAllTask().then(res=>{
+  return dl = document.querySelectorAll('.delete-icon');
+}).then(dl=>{
+  dl.forEach(icon=>{
+    icon.addEventListener('click',(event)=>{
+      const targetEl= event.target;
+      const parent = targetEl.parentElement;
+      const parentDiv = parent.parentElement;
+      console.log(parentDiv);
+      const taskname = parentDiv.querySelector('.task-name').innerText;
+      const taskdate = parentDiv.querySelector('.task-date').innerText;
+      const body = {
+        taskname,
+        taskdate
+      }
+      deleteTask(body);
+      
+
+    });
+
+  });
+
+}).catch(err=>{
+  console.log(err);
+})
+
 
 
 
@@ -20,6 +47,9 @@ submitBtn.addEventListener('click',(event)=>{
   event.preventDefault();
   const taskname = taskInput.value;
   const taskdate = dateInput.value;
+
+  taskInput.value = '';
+  dateInput.value = '';
   
   const obj = {
     taskname,
@@ -89,9 +119,9 @@ async function getAllTask(){
       // div.appendChild(deleteSpan);
 
       html+= `<div class = "task-styling"> 
-              <span>${index+1}</span>
-              <span>${task.taskname}</span>
-              <span>${formattedDate}</span>
+              <span class="task-index">${index+1}</span>
+              <span class="task-name">${task.taskname}</span>
+              <span class = "task-date">${formattedDate}</span>
               <span class='delete-icon'><i class="fa-solid fa-trash"></i></span>
               </div>`
          
@@ -104,9 +134,27 @@ async function getAllTask(){
     console.log(`error : ${err}`);}
 
   taskList.innerHTML = html ;
-  dl = document.querySelectorAll('.delete-icon');
+  
 
 }
 
+
+async function deleteTask(obj){
+
+  const response = await fetch('http://localhost:3000/task/delete', {
+    method : 'DELETE',
+    headers :{
+      "Content-Type":"application/json",
+    },
+    body : JSON.stringify(obj)
+  });
+
+  const result = response.status;
+  console.log(result);
+  getAllTask();
+  
+
+
+  }
 
 
